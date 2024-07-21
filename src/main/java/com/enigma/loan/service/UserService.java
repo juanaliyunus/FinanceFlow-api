@@ -1,17 +1,15 @@
 package com.enigma.loan.service;
 
-import com.enigma.loan.model.dto.request.UserRequest;
-import com.enigma.loan.model.dto.response.UserResponse;
-import com.enigma.loan.model.entity.User;
+import com.enigma.loan.dto.response.UserResponse;
+import com.enigma.loan.entity.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.List;
-
-public interface UserService {
-    UserResponse createUser(UserRequest userRequest);
-    UserResponse updateUser(UserRequest userRequest);
+public interface UserService extends UserDetailsService {
+    @Override
+    UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
+    User loadUserById(String userId);
+    User getByContext();
     UserResponse getUserById(String id);
-    List<UserResponse> getAllUsers();
-    void deleteUser(String id);
-
-    User findUserById(String id);
 }

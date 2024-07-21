@@ -1,36 +1,90 @@
 package com.enigma.loan.controller;
 
 import com.enigma.loan.constant.APIUrl;
-import com.enigma.loan.model.dto.request.LoanTypeRequest;
-import com.enigma.loan.model.dto.response.LoanTypeResponse;
+import com.enigma.loan.dto.request.LoanTypeRequest;
+import com.enigma.loan.dto.response.CommonResponse;
+import com.enigma.loan.dto.response.LoanTypeResponse;
+import com.enigma.loan.service.LoanTypeService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@AllArgsConstructor
 @RequestMapping(path = APIUrl.LOAN_TYPE_API)
 public class LoanTypeController {
-    public ResponseEntity<LoanTypeResponse> createLoanType(LoanTypeRequest loanTypeRequest) {
-        return null;
+
+    private final LoanTypeService loanTypeService;
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_STAFF')")
+    @PostMapping
+    public ResponseEntity<CommonResponse<LoanTypeResponse>> createLoanType(@RequestBody @Valid LoanTypeRequest loanTypeRequest) {
+        LoanTypeResponse response = loanTypeService.createLoanType(loanTypeRequest);
+        CommonResponse<LoanTypeResponse> commonResponse = CommonResponse.<LoanTypeResponse>builder()
+                .statusCode(HttpStatus.CREATED.value())
+                .message("Success create data")
+                .data(response)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(commonResponse);
     }
 
-    public ResponseEntity<List<LoanTypeResponse>> getAllLoanTypes() {
-        return null;
+    @GetMapping
+    public ResponseEntity<CommonResponse<List<LoanTypeResponse>>> getAllLoanTypes() {
+        List<LoanTypeResponse> response = loanTypeService.getAllLoanTypes();
+        CommonResponse<List<LoanTypeResponse>> commonResponse = CommonResponse.<List<LoanTypeResponse>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success get all data")
+                .data(response)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(commonResponse);
     }
 
-    public ResponseEntity<LoanTypeResponse> getLoanTypeById(String id) {
-        return null;
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonResponse<LoanTypeResponse>> getLoanTypeById(@PathVariable String id) {
+        LoanTypeResponse response = loanTypeService.getLoanTypeById(id);
+        CommonResponse<LoanTypeResponse> commonResponse = CommonResponse.<LoanTypeResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success get data by id")
+                .data(response)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(commonResponse);
     }
 
-    public ResponseEntity<String> deleteLoanTypeById(String id) {
-        return null;
+    @DeleteMapping("/{id}")
+    public ResponseEntity<CommonResponse<String>> deleteLoanTypeById(@PathVariable String id) {
+        loanTypeService.deleteLoanTypeById(id);
+        CommonResponse<String> commonResponse = CommonResponse.<String>builder()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .message("Success delete data")
+                .data(null)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(commonResponse);
     }
-    public ResponseEntity<LoanTypeResponse> updateLoanType(LoanTypeRequest loanTypeRequest) {
-        return null;
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_STAFF')")
+    @PutMapping
+    public ResponseEntity<CommonResponse<LoanTypeResponse>> updateLoanType(@RequestBody @Valid LoanTypeRequest loanTypeRequest) {
+        LoanTypeResponse response = loanTypeService.updateLoanType(loanTypeRequest);
+        CommonResponse<LoanTypeResponse> commonResponse = CommonResponse.<LoanTypeResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success update data")
+                .data(response)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(commonResponse);
     }
 }
